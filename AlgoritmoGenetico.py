@@ -1,35 +1,45 @@
-import numpy as np
+import numpy
 from scipy.spatial import distance
-import Util
 import random
+
+import Classes
+import Funcoes
+
 
 class AlgoritmoGenetico:
 
-    def __init__(self, numeroDeCidades, quantidadeDaPopulacao, numeroDeGeracoes, cidades, taxaDeCrossover, taxaDeMutacao):
-        self.numeroDeCidades = numeroDeCidades
-        self.cidades = cidades
-        self.quantidadeDaPopulacao = quantidadeDaPopulacao
-        self.numeroDeGeracoes = numeroDeGeracoes
+    def __init__(self, tamanhoDaPopulacao, geracoes, taxaDeCrossover, taxaDeMutacao, listaDeCidades):
+        self.listaDeCidades = listaDeCidades
+        self.tamanhoDaPopulacao = tamanhoDaPopulacao
+        self.geracoes = geracoes
         self.taxaDeCrossover = taxaDeCrossover
         self.taxaDeMutacao = taxaDeMutacao
 
+        self.populacao = []
 
-    def calcularDistanciaEuclideana(self, coordenada1, coordenada2):
-        return distance.euclidean(coordenada1, coordenada2)
+    def gerarPopulacao(self):
 
-    # def calcularCusto(self, caminho):
+        sequencia = []
 
+        for i in range(1, numpy.size(self.listaDeCidades) + 1):
+            sequencia.append(i)
 
-    def geraPopulacao(self):
-        global populacao
+        for i in range(self.tamanhoDaPopulacao):
+            solucao = Classes.Solucao()
+            solucao.caminho = sequencia
+            random.shuffle(sequencia)
+            solucao.aptidao = Funcoes.custo(self.listaDeCidades, solucao.caminho)
+            self.populacao.append(solucao)
 
-        for i in range(self.quantidadeDaPopulacao):
-            solucao = Util.Solucao()
-            solucao.caminho = self.cidades
-            random.shuffle(solucao.caminho)
-            print(solucao.caminho)
+    def selecionarCaminho(self):
 
+        v1 = random.randrange(numpy.size(self.populacao)//2)
+        v2 = random.randrange(numpy.size(self.populacao)//2)
 
+        if(self.populacao[v1].aptidao > self.populacao[v2].aptidao):
+            return v2
+        else:
+            return v1
 
 
 

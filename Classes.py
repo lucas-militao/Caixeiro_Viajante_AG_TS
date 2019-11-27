@@ -1,3 +1,6 @@
+import numpy
+import Funcoes
+
 class Cidade:
     def __init__(self, numero, coordenadaX, coordenadaY):
         self.numero = numero
@@ -8,3 +11,4 @@ class Solucao:
     def __init__(self):
         self.caminho = []
         self.aptidao = -1
+
