@@ -18,28 +18,19 @@ class AlgoritmoGenetico:
         self.populacao = []
 
     def gerarPopulacao(self):
-
+        #--SEQUENCIA ARMAZENA ORDENADAMENTE O NÚMERO INTEIRO QUE REPRESENTA CADA CIDADE--
         sequencia = []
 
         for i in range(1, numpy.size(self.listaDeCidades) + 1):
             sequencia.append(i)
 
+        #--ALEATORIAMENTE FORMA OS CAMINHOS E CALCULA A APTIDÃO DE CADA POSSÍVEL SOLUÇÃO--
         for i in range(self.tamanhoDaPopulacao):
             solucao = Classes.Solucao()
             solucao.caminho = sequencia
             random.shuffle(sequencia)
             solucao.aptidao = Funcoes.custo(self.listaDeCidades, solucao.caminho)
             self.populacao.append(solucao)
-
-    def selecionarCaminho(self):
-
-        v1 = random.randrange(numpy.size(self.populacao)//2)
-        v2 = random.randrange(numpy.size(self.populacao)//2)
-
-        if(self.populacao[v1].aptidao > self.populacao[v2].aptidao):
-            return v2
-        else:
-            return v1
 
     def crossoverPMX(self, posicao1, posicao2, pai1, pai2):
 
@@ -59,6 +50,7 @@ class AlgoritmoGenetico:
         elementosNaoHerdados2 = []
         elementoHerdado2 = False
 
+        #--COPIA PARA AS DUAS POSICOES SELECIONADAS PARTE DO PAI 1 PARA O FILHO 1 E DO PAI 2 PARA O FILHO 2--
         for i in range(posicao1, posicao2):
             for j in range(posicao1, posicao2):
                 if(pai2[i] == filho1[j]):
@@ -103,11 +95,7 @@ class AlgoritmoGenetico:
         for i in range(numpy.size(filho2)):
             if(filho2[i] == -1):
                 filho2[i] = pai1[i]
-        #--TESTE--
-        # print(filho1)
-        # print(filho2)
-        # print(elementosNaoHerdados1)
-        # print(elementosNaoHerdados2)
+
 
     def crossoverAPX(self, pai1, pai2):
 
@@ -153,3 +141,36 @@ class AlgoritmoGenetico:
             if(Herdado == False):
                 filho2.append(pai1[i])
             Herdado = False
+
+    def roleta(self, solucoes):
+        #--ORDENA AS SOLUÇÕES A PARTIR DA APTIDÃO--
+        solucoes.sort(key=lambda i: i.aptidao, reverse=True)
+        #--FUNÇÃO DE APTIDÃO--
+        maior = solucoes[0].aptidao
+        menor = solucoes[numpy.size(solucoes) - 1].aptidao
+        N = numpy.size(solucoes)
+        fi = []
+
+        for i in range(N):
+            fi.append(menor+((maior-menor)*((N-i)/(N-1))))
+
+        soma = 0
+        for i in solucoes:
+            soma = soma + i.aptidao
+
+        probabilidade = []
+        for i in fi:
+            probabilidade.append(i/soma)
+
+        elemento1 = random.randrange(int(fi[numpy.size(fi) - 1]), int(fi[0]))
+        elemento2 = random.randrange(int(fi[numpy.size(fi) - 1]), int(fi[0]))
+
+        pai1 = min(fi, key=lambda x:abs(x-elemento1))
+        pai2 = min(fi, key=lambda x:abs(x-elemento2))
+
+        paisSorteados = []
+        paisSorteados.append(fi.index(pai1))
+        paisSorteados.append(fi.index(pai2))
+
+        return paisSorteados
+
