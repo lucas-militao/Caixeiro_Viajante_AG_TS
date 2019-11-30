@@ -46,5 +46,10 @@ algoritmo = AlgoritmoGenetico.AlgoritmoGenetico(tamanhoDaPopulacao,
                                                 listaDeCidades)
 
 algoritmo.gerarPopulacao()
-print(algoritmo.selecionarCaminho())
+
+#--TESTE--
+# pai1 = [1,2,3,4,5,6,7,8,9]
+# pai2 = [9,3,7,8,2,6,5,1,4]
+#
+# algoritmo.crossoverPMX(3, 7, pai1, pai2)
 

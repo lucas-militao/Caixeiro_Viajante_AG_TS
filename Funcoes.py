@@ -27,8 +27,3 @@ def custo(vertices, caminho):
     pesos = calcularPesos(vertices, caminho)
 
     return sum(pesos)
-
-def crossOverPMX(caminho1, caminho2):
-
-    posicao1 = 5
-    posicao2 = 15
