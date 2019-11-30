@@ -108,3 +108,48 @@ class AlgoritmoGenetico:
         # print(filho2)
         # print(elementosNaoHerdados1)
         # print(elementosNaoHerdados2)
+
+    def crossoverAPX(self, pai1, pai2):
+
+        filho1 = numpy.zeros(numpy.size(pai1))
+        filho2 = numpy.zeros(numpy.size(pai2))
+        filho1 = []
+        filho2 = []
+
+        Herdado = False
+
+        #--FILHO 1--
+        for i in range(numpy.size(pai1)):
+            for j in filho1:
+                if(pai1[i] == j):
+                    Herdado = True
+                    break
+            if(Herdado == False):
+                filho1.append(pai1[i])
+            Herdado = False
+
+            for j in filho1:
+                if(pai2[i] == j):
+                    Herdado = True
+                    break
+            if(Herdado == False):
+                filho1.append(pai2[i])
+            Herdado = False
+
+        #--FILHO 2--
+        for i in range(numpy.size(pai2)):
+            for j in filho2:
+                if(pai2[i] == j):
+                    Herdado = True
+                    break
+            if(Herdado == False):
+                filho2.append(pai2[i])
+            Herdado = False
+
+            for j in filho2:
+                if(pai1[i] == j):
+                    Herdado = True
+                    break
+            if(Herdado == False):
+                filho2.append(pai1[i])
+            Herdado = False
