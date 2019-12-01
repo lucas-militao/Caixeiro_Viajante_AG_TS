@@ -178,6 +178,10 @@ class AlgoritmoGenetico:
             elemento[pos1] = j
         print(elemento)
 
+        solucao = Classes.Solucao()
+        solucao.caminho = elemento
+        self.filhos.append(solucao)
+
     def mutacaoInversao(self, elemento):
 
         pos1 = random.randint(0, numpy.size(elemento) - 1)
@@ -196,7 +200,9 @@ class AlgoritmoGenetico:
             parteCortada.reverse()
             elemento[pos2:pos1] = parteCortada
 
-        print(elemento)
+        solucao = Classes.Solucao()
+        solucao.caminho = elemento
+        self.filhos.append(solucao)
 
     def roleta(self, solucoes):
         #--ORDENA AS SOLUÇÕES A PARTIR DA APTIDÃO--
@@ -248,8 +254,13 @@ class AlgoritmoGenetico:
                                   populacaoAtual[self.sorteio[0]].caminho,
                                   populacaoAtual[self.sorteio[1]].caminho)
 
-                # if(numpy.size(self.filhos) < self.tamanhoDaPopulacao):
+                if(numpy.size(self.filhos) < self.tamanhoDaPopulacao):
+                    self.mutacaoInversao(self.sorteio[0])
+                    self.mutacaoInversao(self.sorteio[1])
 
+            break
+
+        print(self.filhos)
 
 
 
