@@ -45,15 +45,16 @@ algoritmo = AlgoritmoGenetico.AlgoritmoGenetico(tamanhoDaPopulacao,
                                                 taxaDeMutacao,
                                                 listaDeCidades)
 
-algoritmo.gerarPopulacao()
+# algoritmo.roleta(algoritmo.populacao)
 
-algoritmo.roleta(algoritmo.populacao)
-
+# algoritmo.executar()
 
 #--TESTE--
-# pai1 = [1,2,3,4,5,6,7,8,9]
-# pai2 = [9,3,7,8,2,6,5,1,4]
+pai1 = [1,2,3,4,5,6,7,8,9]
+pai2 = [9,3,7,8,2,6,5,1,4]
 #
 # algoritmo.crossoverPMX(3, 7, pai1, pai2)
 # algoritmo.crossoverAPX(pai1, pai2)
+# algoritmo.mutacaoBaseadaEmPosicao(pai1)
 
+algoritmo.mutacaoInversao(pai1)

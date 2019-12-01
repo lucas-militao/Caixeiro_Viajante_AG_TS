@@ -19,6 +19,7 @@ class AlgoritmoGenetico:
 
     def gerarPopulacao(self):
         #--SEQUENCIA ARMAZENA ORDENADAMENTE O NÚMERO INTEIRO QUE REPRESENTA CADA CIDADE--
+        self.populacao = []
         sequencia = []
 
         for i in range(1, numpy.size(self.listaDeCidades) + 1):
@@ -27,8 +28,8 @@ class AlgoritmoGenetico:
         #--ALEATORIAMENTE FORMA OS CAMINHOS E CALCULA A APTIDÃO DE CADA POSSÍVEL SOLUÇÃO--
         for i in range(self.tamanhoDaPopulacao):
             solucao = Classes.Solucao()
-            solucao.caminho = sequencia
-            random.shuffle(sequencia)
+            solucao.caminho = sequencia.copy()
+            random.shuffle(solucao.caminho)
             solucao.aptidao = Funcoes.custo(self.listaDeCidades, solucao.caminho)
             self.populacao.append(solucao)
 
@@ -96,51 +97,106 @@ class AlgoritmoGenetico:
             if(filho2[i] == -1):
                 filho2[i] = pai1[i]
 
+        solucao = Classes.Solucao()
+        solucao.caminho = filho1
+        self.filhos.append(solucao)
+        solucao = Classes.Solucao()
+        solucao.caminho = filho2
+        self.filhos.append(solucao)
+
 
     def crossoverAPX(self, pai1, pai2):
 
-        filho1 = numpy.zeros(numpy.size(pai1))
-        filho2 = numpy.zeros(numpy.size(pai2))
         filho1 = []
         filho2 = []
-
+        tamanho = numpy.size(pai1)
         Herdado = False
 
-        #--FILHO 1--
-        for i in range(numpy.size(pai1)):
-            for j in filho1:
-                if(pai1[i] == j):
-                    Herdado = True
-                    break
-            if(Herdado == False):
-                filho1.append(pai1[i])
-            Herdado = False
+        for i in range(tamanho):
+            if(numpy.size(filho1) < tamanho):
 
-            for j in filho1:
-                if(pai2[i] == j):
-                    Herdado = True
-                    break
-            if(Herdado == False):
-                filho1.append(pai2[i])
-            Herdado = False
+                for j in filho1:
+                    if(j == pai1[i]):
+                        Herdado = True
+                        break
+                if(Herdado == True):
+                    Herdado = False
+                    for j in filho1:
+                        if(j == pai2[i]):
+                            Herdado = True
+                            break
+                    if(Herdado == False):
+                        filho1.append(pai2[i])
+                else:
+                    filho1.append(pai1[i])
+            else:
+                break
 
-        #--FILHO 2--
-        for i in range(numpy.size(pai2)):
-            for j in filho2:
-                if(pai2[i] == j):
-                    Herdado = True
-                    break
-            if(Herdado == False):
-                filho2.append(pai2[i])
-            Herdado = False
+        for i in range(tamanho):
+            if(numpy.size(filho2) < tamanho):
 
-            for j in filho2:
-                if(pai1[i] == j):
-                    Herdado = True
-                    break
-            if(Herdado == False):
-                filho2.append(pai1[i])
-            Herdado = False
+                for j in filho2:
+                    if(j == pai2[i]):
+                        Herdado = True
+                        break
+                if(Herdado == True):
+                    Herdado = False
+                    for j in filho2:
+                        if(j == pai1[i]):
+                            Herdado = True
+                            break
+                    if(Herdado == False):
+                        filho2.append(pai1[i])
+                else:
+                    filho2.append(pai2[i])
+            else:
+                break
+
+        solucao = Classes.Solucao()
+        solucao.caminho = filho1
+        self.filhos.append(solucao)
+        solucao = Classes.Solucao()
+        solucao.caminho = filho2
+        self.filhos.append(solucao)
+
+    def mutacaoBaseadaEmPosicao(self, elemento):
+
+        pos1 = random.randint(0, numpy.size(elemento) - 1)
+        pos2 = random.randint(0, numpy.size(elemento) - 1)
+
+        j = 0
+
+        if(pos1 < pos2):
+            j = elemento[pos1]
+            for i in range(pos1, pos2):
+                elemento[i] = elemento[i+1]
+            elemento[pos2] = j
+        else:
+            j = elemento[pos2]
+            for i in range(pos2, pos1):
+                elemento[i] = elemento[i+1]
+            elemento[pos1] = j
+        print(elemento)
+
+    def mutacaoInversao(self, elemento):
+
+        pos1 = random.randint(0, numpy.size(elemento) - 1)
+        pos2 = random.randint(0, numpy.size(elemento) - 1)
+
+        parteCortada = []
+
+        if(pos1 < pos2):
+            for i in range(pos1, pos2):
+                parteCortada.append(elemento[i])
+            parteCortada.reverse()
+            elemento[pos1:pos2] = parteCortada
+        else:
+            for i in range(pos2, pos1):
+                parteCortada.append(elemento[i])
+            parteCortada.reverse()
+            elemento[pos2:pos1] = parteCortada
+
+        print(elemento)
 
     def roleta(self, solucoes):
         #--ORDENA AS SOLUÇÕES A PARTIR DA APTIDÃO--
@@ -162,15 +218,44 @@ class AlgoritmoGenetico:
         for i in fi:
             probabilidade.append(i/soma)
 
-        elemento1 = random.randrange(int(fi[numpy.size(fi) - 1]), int(fi[0]))
-        elemento2 = random.randrange(int(fi[numpy.size(fi) - 1]), int(fi[0]))
+        elemento = random.randrange(int(fi[numpy.size(fi) - 1]), int(fi[0]))
+        pai = min(fi, key=lambda x:abs(x-elemento))
+        pos = fi.index(pai)
+        self.sorteio.append(pos)
+        elemento = random.randrange(int(fi[numpy.size(fi) - 1]), int(fi[0]))
+        pai = min(fi, key=lambda x: abs(x - elemento))
+        pos = fi.index(pai)
+        self.sorteio.append(pos)
 
-        pai1 = min(fi, key=lambda x:abs(x-elemento1))
-        pai2 = min(fi, key=lambda x:abs(x-elemento2))
+    def executar(self):
 
-        paisSorteados = []
-        paisSorteados.append(fi.index(pai1))
-        paisSorteados.append(fi.index(pai2))
+        self.gerarPopulacao()
+        self.filhos = []
+        self.sorteio = []
 
-        return paisSorteados
+        geracao = 0
+        populacaoAtual = self.populacao
+
+        self.gerarPopulacao()
+
+        while(geracao < self.geracoes):
+
+            while(numpy.size(self.filhos) < self.tamanhoDaPopulacao):
+                self.sorteio = []
+                self.roleta(populacaoAtual)
+
+                self.crossoverPMX(5, 15,
+                                  populacaoAtual[self.sorteio[0]].caminho,
+                                  populacaoAtual[self.sorteio[1]].caminho)
+
+                # if(numpy.size(self.filhos) < self.tamanhoDaPopulacao):
+
+
+
+
+
+
+
+
+
 
