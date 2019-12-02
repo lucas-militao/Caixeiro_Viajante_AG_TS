@@ -97,12 +97,14 @@ class AlgoritmoGenetico:
             if(filho2[i] == -1):
                 filho2[i] = pai1[i]
 
+        resultado = []
         solucao = Classes.Solucao()
         solucao.caminho = filho1
-        self.filhos.append(solucao)
+        resultado.append(solucao)
         solucao = Classes.Solucao()
         solucao.caminho = filho2
-        self.filhos.append(solucao)
+        resultado.append(solucao)
+        return resultado
 
 
     def crossoverAPX(self, pai1, pai2):
@@ -152,12 +154,14 @@ class AlgoritmoGenetico:
             else:
                 break
 
+        resultado = []
         solucao = Classes.Solucao()
         solucao.caminho = filho1
-        self.filhos.append(solucao)
+        resultado.append(solucao)
         solucao = Classes.Solucao()
         solucao.caminho = filho2
-        self.filhos.append(solucao)
+        resultado.append(solucao)
+        return resultado
 
     def mutacaoBaseadaEmPosicao(self, elemento):
 
@@ -176,11 +180,10 @@ class AlgoritmoGenetico:
             for i in range(pos2, pos1):
                 elemento[i] = elemento[i+1]
             elemento[pos1] = j
-        print(elemento)
 
         solucao = Classes.Solucao()
         solucao.caminho = elemento
-        self.filhos.append(solucao)
+        return solucao
 
     def mutacaoInversao(self, elemento):
 
@@ -202,9 +205,9 @@ class AlgoritmoGenetico:
 
         solucao = Classes.Solucao()
         solucao.caminho = elemento
-        self.filhos.append(solucao)
+        return elemento
 
-    def roleta(self, solucoes):
+    def selecao(self, solucoes):
         #--ORDENA AS SOLUÇÕES A PARTIR DA APTIDÃO--
         solucoes.sort(key=lambda i: i.aptidao, reverse=True)
         #--FUNÇÃO DE APTIDÃO--
@@ -233,6 +236,14 @@ class AlgoritmoGenetico:
         pos = fi.index(pai)
         self.sorteio.append(pos)
 
+    def sofrerMutacao(self):
+        valor = random.randrange(0,100)
+
+        if(valor > 10):
+            return True
+        else:
+            return False
+
     def executar(self):
 
         self.gerarPopulacao()
@@ -248,17 +259,28 @@ class AlgoritmoGenetico:
 
             while(numpy.size(self.filhos) < self.tamanhoDaPopulacao):
                 self.sorteio = []
-                self.roleta(populacaoAtual)
+                self.selecao(populacaoAtual)
 
-                self.crossoverPMX(5, 15,
+                resultado = self.crossoverPMX(5, 15,
                                   populacaoAtual[self.sorteio[0]].caminho,
                                   populacaoAtual[self.sorteio[1]].caminho)
 
-                if(numpy.size(self.filhos) < self.tamanhoDaPopulacao):
-                    self.mutacaoInversao(self.sorteio[0])
-                    self.mutacaoInversao(self.sorteio[1])
+                if(self.sofrerMutacao()):
+                    resultado[0] = self.mutacaoBaseadaEmPosicao(resultado[0].caminho)
+                    resultado[1] = self.mutacaoBaseadaEmPosicao(resultado[1].caminho)
 
-            break
+                resultado[0].caminho = resultado[0].caminho.astype(numpy.int64)
+                resultado[1].caminho = resultado[1].caminho.astype(numpy.int64)
+
+                resultado[0].aptidao = Funcoes.custo(self.listaDeCidades, resultado[0].caminho)
+                resultado[1].aptidao = Funcoes.custo(self.listaDeCidades, resultado[1].caminho)
+
+                self.filhos.append(resultado[0])
+                self.filhos.append(resultado[1])
+
+                break
+
+            geracao = geracao + 1
 
         print(self.filhos)
 
