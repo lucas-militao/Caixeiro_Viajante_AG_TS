@@ -33,13 +33,22 @@ algoritmo = AlgoritmoGenetico.AlgoritmoGenetico(tamanhoDaPopulacao,
                                                 taxaDeMutacao,
                                                 listaDeCidades)
 
-algoritmo.executar()
+
+# algoritmo.executar()
 
 #--TESTE--
-# pai1 = [1,2,3,4,5,6,7,8,9]
-# pai2 = [9,3,7,8,2,6,5,1,4]
+pai1 = [1,2,3,4,5,6,7,8,9]
+pai2 = [9,3,7,8,2,6,5,1,4]
 #
-# algoritmo.crossoverPMX(3, 7, pai1, pai2)
+# resultado = algoritmo.crossoverPMX(2, 7, pai1, pai2)
 # algoritmo.crossoverAPX(pai1, pai2)
 # algoritmo.mutacaoBaseadaEmPosicao(pai1)
 # algoritmo.mutacaoInversao(pai1)
+# print(resultado[0].caminho)
+# print(resultado[1].caminho)
+
+resultado = []
+resultado.append(Classes.Solucao())
+resultado.append(Classes.Solucao())
+resultado[0].caminho = pai1
+resultado[1].caminho = pai2

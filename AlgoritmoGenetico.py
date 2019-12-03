@@ -41,69 +41,67 @@ class AlgoritmoGenetico:
         filho1[:] = -1
         filho2[:] = -1
 
+        Herdado = False
+
         for i in range(posicao1, posicao2):
             filho1[i] = pai1[i]
             filho2[i] = pai2[i]
 
-        elementosNaoHerdados1 = []
-        elementoHerdado1 = False
-
-        elementosNaoHerdados2 = []
-        elementoHerdado2 = False
-
-        #--COPIA PARA AS DUAS POSICOES SELECIONADAS PARTE DO PAI 1 PARA O FILHO 1 E DO PAI 2 PARA O FILHO 2--
+        elementosNaoHerdados = []
+        posicoes = []
+        #--FILHO 1--
         for i in range(posicao1, posicao2):
             for j in range(posicao1, posicao2):
-                if(pai2[i] == filho1[j]):
-                    elementoHerdado1 = True
-                if(pai1[i] == filho2[j]):
-                    elementoHerdado2 = True
-            if(elementoHerdado1 == False):
-                elementosNaoHerdados1.append(pai2[i])
-            if(elementoHerdado2 == False):
-                elementosNaoHerdados2.append(pai1[i])
-            elementoHerdado1 = False
-            elementoHerdado2 = False
+                if(filho1[j] == filho2[i]):
+                    Herdado = True
+                    break
+            if(Herdado != True):
+                elementosNaoHerdados.append(filho2[i])
+                posicao = pai2.index(filho1[i])
+                if(posicao > posicao1 and posicao < posicao2):
+                    posicao = pai2.index(filho1[posicao])
+                    posicoes.append(posicao)
+                else:
+                    posicoes.append(posicao)
+            Herdado = False
 
-        #--FILHO 1--
-        for i in range(numpy.size(elementosNaoHerdados1)):
-            pos = pai2.index(elementosNaoHerdados1[i])
-            elemento = pai1[pos]
-            pos = pai2.index(elemento)
-            if(pos >= posicao1 and pos < posicao2):
-                elemento = pai1[pos]
-                pos = pai2.index(elemento)
-                filho1[pos] = elementosNaoHerdados1[i]
-            else:
-                filho1[pos] = elementosNaoHerdados1[i]
+        for i in range(numpy.size(elementosNaoHerdados)):
+            filho1[posicoes[i]] = elementosNaoHerdados[i]
 
         for i in range(numpy.size(filho1)):
             if(filho1[i] == -1):
                 filho1[i] = pai2[i]
 
-        #--FILHO 2--
-        for i in range(numpy.size(elementosNaoHerdados2)):
-            pos = pai1.index(elementosNaoHerdados2[i])
-            elemento = pai2[pos]
-            pos = pai1.index(elemento)
-            if (pos >= posicao1 and pos < posicao2):
-                elemento = pai2[pos]
-                pos = pai1.index(elemento)
-                filho2[pos] = elementosNaoHerdados2[i]
-            else:
-                filho2[pos] = elementosNaoHerdados2[i]
+        elementosNaoHerdados = []
+        posicoes = []
+        # --FILHO 2--
+        for i in range(posicao1, posicao2):
+            for j in range(posicao1, posicao2):
+                if(filho1[i] == filho2[j]):
+                    Herdado = True
+                    break
+            if(Herdado != True):
+                elementosNaoHerdados.append(filho1[i])
+                posicao = pai1.index(filho2[i])
+                if(posicao > posicao1 and posicao < posicao2):
+                    posicao = pai1.index(filho2[posicao])
+                    posicoes.append(posicao)
+                else:
+                    posicoes.append(posicao)
+            Herdado = False
+
+        for i in range(numpy.size(elementosNaoHerdados)):
+            filho2[posicoes[i]] = elementosNaoHerdados[i]
 
         for i in range(numpy.size(filho2)):
             if(filho2[i] == -1):
                 filho2[i] = pai1[i]
 
         resultado = []
-        solucao = Classes.Solucao()
-        solucao.caminho = filho1
-        resultado.append(solucao)
-        solucao = Classes.Solucao()
-        solucao.caminho = filho2
-        resultado.append(solucao)
+        resultado.append(Classes.Solucao)
+        resultado.append(Classes.Solucao)
+        resultado[0].caminho = filho1
+        resultado[1].caminho = filho2
         return resultado
 
 
@@ -205,7 +203,7 @@ class AlgoritmoGenetico:
 
         solucao = Classes.Solucao()
         solucao.caminho = elemento
-        return elemento
+        return solucao
 
     def selecao(self, solucoes):
         #--ORDENA AS SOLUÇÕES A PARTIR DA APTIDÃO--
@@ -247,17 +245,15 @@ class AlgoritmoGenetico:
     def executar(self):
 
         self.gerarPopulacao()
-        self.filhos = []
         self.sorteio = []
 
         geracao = 0
         populacaoAtual = self.populacao
-
-        self.gerarPopulacao()
+        filhos = []
 
         while(geracao < self.geracoes):
 
-            while(numpy.size(self.filhos) < self.tamanhoDaPopulacao):
+            while(numpy.size(filhos) < self.tamanhoDaPopulacao):
                 self.sorteio = []
                 self.selecao(populacaoAtual)
 
@@ -265,24 +261,29 @@ class AlgoritmoGenetico:
                                   populacaoAtual[self.sorteio[0]].caminho,
                                   populacaoAtual[self.sorteio[1]].caminho)
 
-                if(self.sofrerMutacao()):
-                    resultado[0] = self.mutacaoBaseadaEmPosicao(resultado[0].caminho)
-                    resultado[1] = self.mutacaoBaseadaEmPosicao(resultado[1].caminho)
+                resultado[0].caminho = list(resultado[0].caminho)
+                resultado[1].caminho = list(resultado[1].caminho)
 
-                resultado[0].caminho = resultado[0].caminho.astype(numpy.int64)
-                resultado[1].caminho = resultado[1].caminho.astype(numpy.int64)
+                if(self.sofrerMutacao()):
+                    resultado[0] = self.mutacaoInversao(resultado[0].caminho)
+                    resultado[1] = self.mutacaoInversao(resultado[1].caminho)
+
+                if(type(resultado[0].caminho[0]) == type(numpy.float64(10))):
+                    resultado[0].caminho = numpy.array(resultado[0].caminho, dtype='int')
+                    resultado[1].caminho = numpy.array(resultado[1].caminho, dtype='int')
+
+                resultado[0].caminho = list(resultado[0].caminho)
+                resultado[1].caminho = list(resultado[1].caminho)
 
                 resultado[0].aptidao = Funcoes.custo(self.listaDeCidades, resultado[0].caminho)
                 resultado[1].aptidao = Funcoes.custo(self.listaDeCidades, resultado[1].caminho)
 
-                self.filhos.append(resultado[0])
-                self.filhos.append(resultado[1])
-
-                break
+                filhos.append(resultado[0])
+                filhos.append(resultado[1])
 
             geracao = geracao + 1
-
-        print(self.filhos)
+            populacaoAtual = filhos
+            filhos = []
 
 
 
