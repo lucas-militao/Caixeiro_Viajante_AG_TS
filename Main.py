@@ -34,7 +34,7 @@ algoritmo = AlgoritmoGenetico.AlgoritmoGenetico(tamanhoDaPopulacao,
                                                 listaDeCidades)
 
 
-# algoritmo.executar()
+resultado = algoritmo.executar()
 
 #--TESTE--
 pai1 = [1,2,3,4,5,6,7,8,9]
@@ -52,3 +52,5 @@ resultado.append(Classes.Solucao())
 resultado.append(Classes.Solucao())
 resultado[0].caminho = pai1
 resultado[1].caminho = pai2
+
+

@@ -166,6 +166,9 @@ class AlgoritmoGenetico:
         pos1 = random.randint(0, numpy.size(elemento) - 1)
         pos2 = random.randint(0, numpy.size(elemento) - 1)
 
+        solucao = Classes.Solucao()
+        solucao.caminho = elemento
+
         j = 0
 
         if(pos1 < pos2):
@@ -173,13 +176,14 @@ class AlgoritmoGenetico:
             for i in range(pos1, pos2):
                 elemento[i] = elemento[i+1]
             elemento[pos2] = j
-        else:
+        elif(pos1 > pos2):
             j = elemento[pos2]
             for i in range(pos2, pos1):
                 elemento[i] = elemento[i+1]
             elemento[pos1] = j
+        elif(pos1 == pos2):
+            solucao.caminho = self.mutacaoBaseadaEmPosicao(elemento)
 
-        solucao = Classes.Solucao()
         solucao.caminho = elemento
         return solucao
 
@@ -188,6 +192,8 @@ class AlgoritmoGenetico:
         pos1 = random.randint(0, numpy.size(elemento) - 1)
         pos2 = random.randint(0, numpy.size(elemento) - 1)
 
+        solucao = Classes.Solucao()
+
         parteCortada = []
 
         if(pos1 < pos2):
@@ -195,13 +201,15 @@ class AlgoritmoGenetico:
                 parteCortada.append(elemento[i])
             parteCortada.reverse()
             elemento[pos1:pos2] = parteCortada
-        else:
+        elif(pos1 > pos2):
             for i in range(pos2, pos1):
                 parteCortada.append(elemento[i])
             parteCortada.reverse()
             elemento[pos2:pos1] = parteCortada
+        elif(pos1 == pos2):
+            solucao.caminho = self.mutacaoInversao(elemento)
 
-        solucao = Classes.Solucao()
+
         solucao.caminho = elemento
         return solucao
 
@@ -227,17 +235,27 @@ class AlgoritmoGenetico:
 
         elemento = random.randrange(int(fi[numpy.size(fi) - 1]), int(fi[0]))
         pai = min(fi, key=lambda x:abs(x-elemento))
-        pos = fi.index(pai)
-        self.sorteio.append(pos)
+        pos1 = fi.index(pai)
         elemento = random.randrange(int(fi[numpy.size(fi) - 1]), int(fi[0]))
         pai = min(fi, key=lambda x: abs(x - elemento))
-        pos = fi.index(pai)
-        self.sorteio.append(pos)
+        pos2 = fi.index(pai)
+        if(pos1 == pos2):
+            self.selecao(solucoes)
+        self.sorteio.append(pos1)
+        self.sorteio.append(pos2)
 
     def sofrerMutacao(self):
         valor = random.randrange(0,100)
 
-        if(valor > 10):
+        if(valor > self.taxaDeMutacao):
+            return True
+        else:
+            return False
+
+    def sofrerCruzamento(self):
+        valor = random.randrange(0, 100)
+
+        if (valor > self.taxaDeCrossover):
             return True
         else:
             return False
@@ -257,9 +275,12 @@ class AlgoritmoGenetico:
                 self.sorteio = []
                 self.selecao(populacaoAtual)
 
-                resultado = self.crossoverPMX(5, 15,
-                                  populacaoAtual[self.sorteio[0]].caminho,
-                                  populacaoAtual[self.sorteio[1]].caminho)
+                if(self.sofrerCruzamento()):
+                    # resultado = self.crossoverPMX(5, 15,
+                    #                   populacaoAtual[self.sorteio[0]].caminho,
+                    #                   populacaoAtual[self.sorteio[1]].caminho)
+                    resultado = self.crossoverAPX(populacaoAtual[self.sorteio[0]].caminho,
+                                                  populacaoAtual[self.sorteio[1]].caminho)
 
                 resultado[0].caminho = list(resultado[0].caminho)
                 resultado[1].caminho = list(resultado[1].caminho)
@@ -284,6 +305,8 @@ class AlgoritmoGenetico:
             geracao = geracao + 1
             populacaoAtual = filhos
             filhos = []
+
+        return populacaoAtual
 
 
 
